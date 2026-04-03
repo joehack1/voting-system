@@ -1,0 +1,2 @@
+2026/04/03 23:50:12 Failed to initialize database schema:pq: permission denied for schema public at position 1:28 (42501)
+exit status 1
