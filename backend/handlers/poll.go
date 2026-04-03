@@ -3,7 +3,6 @@ package handlers
 import (
     "database/sql"
     "net/http"
-    "time"
 
     "voting-system/db"
     "voting-system/models"
