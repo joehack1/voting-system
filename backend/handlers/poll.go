@@ -31,7 +31,7 @@ func CreatePoll(c *gin.Context) {
     pollID := uuid.New()
     _, err = tx.Exec(`
         INSERT INTO polls (id, question, expires_at)
-        VALUES ($1, $2, $3)`,
+        VALUES (?, ?, ?)`,
         pollID, req.Question, req.ExpiresAt)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create poll"})
@@ -43,7 +43,7 @@ func CreatePoll(c *gin.Context) {
         optID := uuid.New()
         _, err = tx.Exec(`
             INSERT INTO options (id, poll_id, value)
-            VALUES ($1, $2, $3)`,
+            VALUES (?, ?, ?)`,
             optID, pollID, optValue)
         if err != nil {
             c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add options"})
@@ -71,7 +71,7 @@ func GetPoll(c *gin.Context) {
     var poll models.Poll
     err := db.DB.QueryRow(`
         SELECT id, question, created_at, expires_at, is_active
-        FROM polls WHERE id = $1`,
+        FROM polls WHERE id = ?`,
         pollID).Scan(&poll.ID, &poll.Question, &poll.CreatedAt, &poll.ExpiresAt, &poll.IsActive)
     
     if err == sql.ErrNoRows {
@@ -86,7 +86,7 @@ func GetPoll(c *gin.Context) {
     // Get options with vote counts
     rows, err := db.DB.Query(`
         SELECT id, value, votes_count
-        FROM options WHERE poll_id = $1`,
+        FROM options WHERE poll_id = ?`,
         pollID)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch options"})
@@ -127,7 +127,7 @@ func Vote(c *gin.Context) {
     err := db.DB.QueryRow(`
         SELECT EXISTS(
             SELECT 1 FROM votes 
-            WHERE poll_id = $1 AND ip_address = $2
+            WHERE poll_id = ? AND ip_address = ?
         )`, vote.PollID, vote.IPAddress).Scan(&exists)
     
     if err != nil {
@@ -151,7 +151,7 @@ func Vote(c *gin.Context) {
     // Insert vote
     _, err = tx.Exec(`
         INSERT INTO votes (poll_id, option_id, ip_address)
-        VALUES ($1, $2, $3)`,
+        VALUES (?, ?, ?)`,
         vote.PollID, vote.OptionID, vote.IPAddress)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record vote"})
@@ -162,7 +162,7 @@ func Vote(c *gin.Context) {
     _, err = tx.Exec(`
         UPDATE options 
         SET votes_count = votes_count + 1 
-        WHERE id = $1`,
+        WHERE id = ?`,
         vote.OptionID)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update vote count"})
@@ -186,7 +186,7 @@ func GetResults(c *gin.Context) {
         SELECT o.value, o.votes_count,
                ROUND(100.0 * o.votes_count / NULLIF(SUM(o.votes_count) OVER(), 0), 2) as percentage
         FROM options o
-        WHERE o.poll_id = $1
+        WHERE o.poll_id = ?
         ORDER BY o.votes_count DESC`,
         pollID)
     
@@ -212,3 +212,4 @@ func GetResults(c *gin.Context) {
 
     c.JSON(http.StatusOK, gin.H{"results": results})
 }
+
