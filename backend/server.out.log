@@ -26,3 +26,4 @@ Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust
 [GIN] 2026/04/06 - 10:32:44 | 204 |       0s |             ::1 | OPTIONS  "/api/polls"
 [GIN] 2026/04/06 - 10:32:44 | 400 |       0s |             ::1 | POST     "/api/polls"
 [GIN] 2026/04/06 - 10:32:47 | 400 |       0s |             ::1 | POST     "/api/polls"
+[GIN] 2026/04/06 - 10:33:38 | 201 |  11.34ms |             ::1 | POST     "/api/polls"

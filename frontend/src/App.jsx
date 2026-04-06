@@ -15,14 +15,24 @@ function App() {
     e.preventDefault()
     const formData = new FormData(e.target)
     const question = formData.get('question')
-    const options = formData.get('options').split(',').map((opt) => opt.trim())
+    const options = formData
+      .get('options')
+      .split(',')
+      .map((opt) => opt.trim())
+      .filter(Boolean)
+
+    if (options.length < 2) {
+      alert('Please provide at least 2 non-empty options separated by commas.')
+      return
+    }
 
     try {
       const response = await axios.post(`${API_URL}/polls`, { question, options })
       alert(`Poll created! ID: ${response.data.poll_id}`)
       e.target.reset()
-    } catch {
-      alert('Error creating poll')
+    } catch (error) {
+      const backendMessage = error.response?.data?.error
+      alert(backendMessage || 'Error creating poll')
     }
   }
 
