@@ -3,6 +3,7 @@ package handlers
 import (
     "database/sql"
     "net/http"
+    "strconv"
 
     "voting-system/db"
     "voting-system/models"
@@ -10,6 +11,12 @@ import (
     "github.com/gin-gonic/gin"
     "github.com/google/uuid"
 )
+
+type PollSummary struct {
+    ID        string `json:"id"`
+    Question  string `json:"question"`
+    CreatedAt string `json:"created_at"`
+}
 
 // CreatePoll handles POST /api/polls
 func CreatePoll(c *gin.Context) {
@@ -61,6 +68,40 @@ func CreatePoll(c *gin.Context) {
         "poll_id": pollID,
         "message": "Poll created successfully",
     })
+}
+
+// ListPolls handles GET /api/polls
+func ListPolls(c *gin.Context) {
+    limit := 20
+    if rawLimit := c.DefaultQuery("limit", "20"); rawLimit != "" {
+        parsed, err := strconv.Atoi(rawLimit)
+        if err == nil && parsed > 0 && parsed <= 100 {
+            limit = parsed
+        }
+    }
+
+    rows, err := db.DB.Query(`
+        SELECT id, question, created_at
+        FROM polls
+        ORDER BY created_at DESC
+        LIMIT ?`,
+        limit)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch polls"})
+        return
+    }
+    defer rows.Close()
+
+    polls := make([]PollSummary, 0)
+    for rows.Next() {
+        var p PollSummary
+        if err := rows.Scan(&p.ID, &p.Question, &p.CreatedAt); err != nil {
+            continue
+        }
+        polls = append(polls, p)
+    }
+
+    c.JSON(http.StatusOK, gin.H{"polls": polls})
 }
 
 // GetPoll handles GET /api/polls/:id

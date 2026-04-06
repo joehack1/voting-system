@@ -2,10 +2,11 @@ import { useState } from 'react'
 import axios from 'axios'
 import './App.css'
 
-const API_URL = 'http://localhost:8080/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api'
 
 function App() {
   const [pollId, setPollId] = useState('')
+  const [pollList, setPollList] = useState([])
   const [poll, setPoll] = useState(null)
   const [selectedOption, setSelectedOption] = useState('')
   const [voteMessage, setVoteMessage] = useState('')
@@ -29,6 +30,8 @@ function App() {
     try {
       const response = await axios.post(`${API_URL}/polls`, { question, options })
       alert(`Poll created! ID: ${response.data.poll_id}`)
+      setPollId(response.data.poll_id)
+      await loadRecentPolls()
       e.target.reset()
     } catch (error) {
       const backendMessage = error.response?.data?.error
@@ -36,15 +39,26 @@ function App() {
     }
   }
 
-  const loadPoll = async () => {
-    if (!pollId) return
+  const loadPoll = async (id = pollId) => {
+    if (!id) return
     try {
-      const response = await axios.get(`${API_URL}/polls/${pollId}`)
+      const response = await axios.get(`${API_URL}/polls/${id}`)
+      setPollId(id)
       setPoll(response.data)
+      setSelectedOption('')
       setResults(null)
       setVoteMessage('')
     } catch {
       alert('Poll not found')
+    }
+  }
+
+  const loadRecentPolls = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/polls?limit=20`)
+      setPollList(response.data.polls || [])
+    } catch {
+      alert('Could not load recent polls')
     }
   }
 
@@ -112,6 +126,19 @@ function App() {
           <button onClick={loadPoll}>Load Poll</button>
         </div>
 
+        <div className="poll-input">
+          <button onClick={loadRecentPolls}>Load Recent Polls</button>
+          <select value={pollId} onChange={(e) => setPollId(e.target.value)}>
+            <option value="">Select a poll</option>
+            {pollList.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.question} ({p.id.slice(0, 8)})
+              </option>
+            ))}
+          </select>
+          <button onClick={() => loadPoll(pollId)}>Open Selected</button>
+        </div>
+
         {poll && (
           <div className="poll-details">
             <h3>{poll.poll.question}</h3>
@@ -161,3 +188,4 @@ function App() {
 }
 
 export default App
+

@@ -5,25 +5,18 @@ Connected to SQLite (voting.db)
  - using env:	export GIN_MODE=release
  - using code:	gin.SetMode(gin.ReleaseMode)
 
+[GIN-debug] GET    /api/polls                --> voting-system/handlers.ListPolls (4 handlers)
 [GIN-debug] POST   /api/polls                --> voting-system/handlers.CreatePoll (4 handlers)
 [GIN-debug] GET    /api/polls/:id            --> voting-system/handlers.GetPoll (4 handlers)
 [GIN-debug] POST   /api/vote                 --> voting-system/handlers.Vote (4 handlers)
 [GIN-debug] GET    /api/results/:pollId      --> voting-system/handlers.GetResults (4 handlers)
 [GIN-debug] GET    /                         --> main.main.func2 (4 handlers)
 [GIN-debug] GET    /health                   --> main.main.func3 (4 handlers)
-🚀 Server running on http://localhost:8080
+🚀 Server running on http://localhost:8081
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust-all-proxies for details.
-[GIN-debug] Listening and serving HTTP on :8080
-[GIN] 2026/04/05 - 18:12:03 | 200 |       0s |             ::1 | GET      "/"
-[GIN] 2026/04/05 - 18:12:43 | 200 |       0s |             ::1 | GET      "/health"
-[GIN] 2026/04/05 - 18:12:43 | 200 |       0s |             ::1 | GET      "/health"
-[GIN] 2026/04/05 - 18:13:48 | 200 |       0s |             ::1 | GET      "/"
-[GIN] 2026/04/05 - 22:58:44 | 204 |       0s |             ::1 | OPTIONS  "/api/polls"
-[GIN] 2026/04/05 - 22:58:44 | 400 |       0s |             ::1 | POST     "/api/polls"
-[GIN] 2026/04/05 - 22:58:54 | 404 |   1.69ms |             ::1 | GET      "/api/polls/1"
-[GIN] 2026/04/05 - 22:58:59 | 200 |  38.05ms |             ::1 | GET      "/api/results/1"
-[GIN] 2026/04/06 - 10:32:44 | 204 |       0s |             ::1 | OPTIONS  "/api/polls"
-[GIN] 2026/04/06 - 10:32:44 | 400 |       0s |             ::1 | POST     "/api/polls"
-[GIN] 2026/04/06 - 10:32:47 | 400 |       0s |             ::1 | POST     "/api/polls"
-[GIN] 2026/04/06 - 10:33:38 | 201 |  11.34ms |             ::1 | POST     "/api/polls"
+[GIN-debug] Listening and serving HTTP on :8081
+[GIN] 2026/04/06 - 10:46:50 | 200 |    1.1ms |             ::1 | GET      "/api/polls?limit=5"
+[GIN] 2026/04/06 - 10:46:51 | 200 |       0s |       127.0.0.1 | GET      "/health"
+[GIN] 2026/04/06 - 10:47:05 | 200 |  782.6µs |             ::1 | GET      "/api/polls?limit=5"
+[GIN] 2026/04/06 - 10:47:06 | 200 |  515.8µs |             ::1 | GET      "/api/polls?limit=5"

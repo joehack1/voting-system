@@ -41,6 +41,7 @@ func main() {
     // API routes
     api := r.Group("/api")
     {
+        api.GET("/polls", handlers.ListPolls)
         api.POST("/polls", handlers.CreatePoll)
         api.GET("/polls/:id", handlers.GetPoll)
         api.POST("/vote", handlers.Vote)
