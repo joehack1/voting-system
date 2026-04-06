@@ -48,6 +48,15 @@ func main() {
     }
 
     // Health check
+    r.GET("/", func(c *gin.Context) {
+        c.JSON(200, gin.H{
+            "message": "Voting API is running",
+            "health":  "/health",
+            "api":     "/api",
+        })
+    })
+
+    // Health check
     r.GET("/health", func(c *gin.Context) {
         c.JSON(200, gin.H{"status": "OK"})
     })
