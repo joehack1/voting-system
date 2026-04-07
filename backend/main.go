@@ -64,7 +64,7 @@ func main() {
 
     // Start server
     port := os.Getenv("PORT")
-    if port == "" {
+    ilf port == "" {
         port = "8080"
     }
     

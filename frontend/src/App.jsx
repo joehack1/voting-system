@@ -10,6 +10,7 @@ function App() {
   const [poll, setPoll] = useState(null)
   const [selectedOption, setSelectedOption] = useState('')
   const [voteMessage, setVoteMessage] = useState('')
+  const [voteStatus, setVoteStatus] = useState('notice')
   const [results, setResults] = useState(null)
 
   const createPoll = async (e) => {
@@ -48,6 +49,7 @@ function App() {
       setSelectedOption('')
       setResults(null)
       setVoteMessage('')
+      setVoteStatus('notice')
     } catch {
       alert('Poll not found')
     }
@@ -70,12 +72,15 @@ function App() {
         option_id: selectedOption,
       })
       setVoteMessage('Success: vote recorded.')
+      setVoteStatus('success')
       loadResults()
     } catch (error) {
       if (error.response?.status === 409) {
         setVoteMessage('Notice: you already voted in this poll.')
+        setVoteStatus('notice')
       } else {
         setVoteMessage('Error: could not record vote.')
+        setVoteStatus('error')
       }
     }
   }
@@ -106,7 +111,7 @@ function App() {
         <form onSubmit={createPoll} className="stack-form">
           <input name="question" placeholder="Poll question" required />
           <input name="options" placeholder="Option A, Option B, Option C" required />
-          <button type="submit">Create Poll</button>
+          <button type="submit" className="btn btn-primary">Create Poll</button>
         </form>
       </section>
 
@@ -123,11 +128,11 @@ function App() {
             value={pollId}
             onChange={(e) => setPollId(e.target.value)}
           />
-          <button onClick={loadPoll}>Load Poll</button>
+          <button onClick={loadPoll} className="btn btn-primary">Load Poll</button>
         </div>
 
         <div className="poll-input">
-          <button onClick={loadRecentPolls}>Load Recent Polls</button>
+          <button onClick={loadRecentPolls} className="btn btn-secondary">Load Recent Polls</button>
           <select value={pollId} onChange={(e) => setPollId(e.target.value)}>
             <option value="">Select a poll</option>
             {pollList.map((p) => (
@@ -136,7 +141,7 @@ function App() {
               </option>
             ))}
           </select>
-          <button onClick={() => loadPoll(pollId)}>Open Selected</button>
+          <button onClick={() => loadPoll(pollId)} className="btn btn-primary">Open Selected</button>
         </div>
 
         {poll && (
@@ -156,8 +161,8 @@ function App() {
                 </label>
               ))}
             </div>
-            <button onClick={vote}>Submit Vote</button>
-            {voteMessage && <p className="message">{voteMessage}</p>}
+            <button onClick={vote} className="btn btn-danger">Submit Vote</button>
+            {voteMessage && <p className={`message message-${voteStatus}`}>{voteMessage}</p>}
           </div>
         )}
       </section>
@@ -168,7 +173,7 @@ function App() {
           <p>Refresh to pull latest percentages for the selected poll.</p>
         </div>
 
-        <button onClick={loadResults}>Refresh Results</button>
+        <button onClick={loadResults} className="btn btn-secondary">Refresh Results</button>
         {results && (
           <div className="results">
             {results.map((r, idx) => (
